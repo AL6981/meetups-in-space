@@ -2,6 +2,7 @@ require 'sinatra'
 require_relative 'config/application'
 require "sinatra/reloader" if development?
 
+
 set :bind, '0.0.0.0'  # bind to all interfaces
 
 helpers do
@@ -34,5 +35,39 @@ get '/sign_out' do
 end
 
 get '/meetups' do
+  @meetups = Meetup.all
   erb :'meetups/index'
+end
+
+get '/meetups/show/:id' do
+  @meetup = Meetup.find(params[:id])
+  @users = User.all
+  #currently shows all users, not those joined
+  erb :'meetups/show'
+end
+
+get '/meetups/new' do
+
+  erb :'meetups/new'
+end
+
+post '/meetups/new' do
+  if (session[:user_id])
+    meetup = Meetup.new(name: params[:name], location: params[:location], description: params[:description], creator: User.find(session[:user_id]).username)
+      if meetup.valid?
+        meetup.save
+        flash[:notice] = "Saved!"
+        redirect '/'
+      else
+        flash[:notice] = "Not saved!"
+      end
+  else
+    flash[:notice] = "You must sign in before creating an event!"
+    erb :'meetups/new'
+  end
+
+post '/meetups/show/:id' do
+  #needs to collect person joining and add to meetup users list 
+  erb :'/meetups/show/:id'
+end
 end

@@ -1,3 +1,11 @@
 <h1>Meetups</h1>
 
 <!-- This is where the list of meetups will output -->
+
+<ul>
+  <% @meetups.each do |meetup| %>
+    <li><a href="/meetups/show/<%=meetup.id%>"><%=meetup.name%></a></li>
+  <%end%>
+</ul>
+
+<a href="/meetups/new">link</a>
